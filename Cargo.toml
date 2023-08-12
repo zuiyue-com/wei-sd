@@ -8,3 +8,4 @@ homepage = "https://github.com/zuiyue-com/wei-sd"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+serde_json = "1.0"

@@ -2,7 +2,8 @@
 name = "wei-sd"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "一键安装stable diffusion web-ui，调用api接口，检查api接口，卸载软件"
+documentation = "https://github.com/zuiyue-com/wei-sd"
+homepage = "https://github.com/zuiyue-com/wei-sd"
 
 [dependencies]

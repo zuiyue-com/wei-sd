@@ -5,5 +5,6 @@ edition = "2021"
 description = "一键安装stable diffusion web-ui，调用api接口，检查api接口，卸载软件"
 documentation = "https://github.com/zuiyue-com/wei-sd"
 homepage = "https://github.com/zuiyue-com/wei-sd"
+license = "MIT OR Apache-2.0"
 
 [dependencies]

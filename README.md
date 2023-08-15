@@ -6,3 +6,13 @@
 - [ ] 调用api接口
 - [ ] 检查api接口
 - [ ] 卸载软件
+
+
+# wei-sd
+stable diffusion 接口
+
+## 0.1 版本功能
+
+- [ ] 调用文生图 API
+- [ ] 接收从命令行传入的 json 参数
+- [ ] 调用 wei-download 下载 stable-diffusion-webui

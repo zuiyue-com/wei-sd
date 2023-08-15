@@ -1,6 +1,9 @@
 use std::env;
+use serde_json::Value;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), reqwest::Error> {
+    wei_env::bin_init("wei-sd");
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
@@ -17,21 +20,49 @@ fn main() {
             println!("Uninstalling...");
         },
         "api" => {
-            let json = &args[2];
-            let value: serde_json::Value = serde_json::from_str(json).unwrap();
-            println!("{:#?}", value);
+            api().await?;
         },
         _ => {
             help();
             std::process::exit(1);
         }
     }
+
+    Ok(())
 }
 
 fn help() {
     let args: Vec<String> = env::args().collect();
-    eprintln!("Usage:");
-    eprintln!("  {} install", args[0]);
-    eprintln!("  {} uninstall", args[0]);
-    eprintln!("  {} api <json>", args[0]);
+    println!("Usage:");
+    println!("  {} install", args[0]);
+    println!("  {} uninstall", args[0]);
+    println!("  {} api <json>", args[0]);
+}
+
+async fn api() -> Result<(), reqwest::Error> {
+    let args: Vec<String> = env::args().collect();
+    let payload_str = &args[2];
+    
+    // 尝试将参数解析为 JSON
+    let payload: Value = match serde_json::from_str(payload_str) {
+        Ok(v) => v,
+        Err(e) => {
+            print!("{{\"code\": 400,\"status\": \"{}\"}}", e);
+            return Ok(());
+        }
+    };
+
+    let client = reqwest::Client::new();
+    let url = "http://192.168.1.8:7860/sdapi/v1/txt2img";
+
+    let response = client.post(url)
+        .header("accept", "application/json")
+        .header("Content-Type", "application/json")
+        .json(&payload)
+        .send()
+        .await?;
+
+    print!("{{\"code\": 200,\"status\": \"Ok\", \"data\": {:?}}}", response.text().await?);
+
+    Ok(())
 }

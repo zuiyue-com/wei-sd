@@ -19,6 +19,9 @@ async fn main() -> Result<(), reqwest::Error> {
         "uninstall" => {
             println!("Uninstalling...");
         },
+        "check" => {
+
+        },
         "api" => {
             api().await?;
         },
@@ -36,24 +39,24 @@ fn help() {
     println!("Usage:");
     println!("  {} install", args[0]);
     println!("  {} uninstall", args[0]);
-    println!("  {} api <json>", args[0]);
+    println!("  {} api <url> <json>", args[0]);
 }
 
 async fn api() -> Result<(), reqwest::Error> {
     let args: Vec<String> = env::args().collect();
-    let payload_str = &args[2];
+    let payload_str = &args[3];
     
     // 尝试将参数解析为 JSON
     let payload: Value = match serde_json::from_str(payload_str) {
         Ok(v) => v,
         Err(e) => {
-            print!("{{\"code\": 400,\"status\": \"{}\"}}", e);
+            print!("{{\"code\": 400,\"status\": \"Error:{} Payload:{}\"}}", e, payload_str);
             return Ok(());
         }
     };
 
     let client = reqwest::Client::new();
-    let url = "http://192.168.1.8:7860/sdapi/v1/txt2img";
+    let url = format!("http://192.168.1.8:7860{}", &args[2]);
 
     let response = client.post(url)
         .header("accept", "application/json")

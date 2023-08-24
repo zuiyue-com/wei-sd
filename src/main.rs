@@ -1,5 +1,6 @@
 use std::env;
 use serde_json::Value;
+use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
@@ -44,21 +45,44 @@ fn help() {
 
 async fn api() -> Result<(), reqwest::Error> {
     let args: Vec<String> = env::args().collect();
+    let report_url_process = &args[2];
+    let action_url = &args[3];
     let payload_str = &args[4];
     
     // 尝试将参数解析为 JSON
     let payload: Value = match serde_json::from_str(payload_str) {
         Ok(v) => v,
         Err(e) => {
-            print!("{{\"code\": 400,\"status\": \"Error:{} Payload:{}\"}}", e, payload_str);
+            print!("{}", json!({
+                "code": 400,
+                "status": format!("Error:{} Payload:{}", e, payload_str)
+            }).to_string());
             return Ok(());
         }
     };
 
-    let report_url_process = &args[2];
+    // 开始任务进度报告
+    let handle = tokio::spawn( async move {
+        loop {
+            let client = reqwest::Client::new();
+            let response = client.get("http://192.168.1.8:7860/sdapi/v1/progress?skip_current_image=false")
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json")
+                .send().await.unwrap();
+            
+            let data: Value = response.json().await.unwrap();
+
+            let response = client.post(report_url_process)
+                .body(json!({
+                    "info": base64::encode(format!("{}",data["progress"]))
+                }).to_string()).send().await.unwrap();
+
+            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+        }
+    });
 
     let client = reqwest::Client::new();
-    let url = format!("http://192.168.1.8:7860{}", &args[3]);
+    let url = format!("http://192.168.1.8:7860{}", action_url);
 
     let response = client.post(url)
         .header("accept", "application/json")
@@ -67,7 +91,13 @@ async fn api() -> Result<(), reqwest::Error> {
         .send()
         .await?;
 
-    print!("{{\"code\": 200,\"status\": \"Ok\", \"data\": {:?}}}", response.text().await?);
+    print!("{}", json!({
+        "code": 200,
+        "status": "Ok",
+        "data": base64::encode(response.text().await?)
+    }).to_string());
+
+    handle.abort();
 
     Ok(())
 }

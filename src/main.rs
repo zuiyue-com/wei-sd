@@ -45,7 +45,7 @@ fn help() {
 
 async fn api() -> Result<(), reqwest::Error> {
     let args: Vec<String> = env::args().collect();
-    let report_url_process = &args[2];
+    let report_url_process = args[2].clone();
     let action_url = &args[3];
     let payload_str = &args[4];
     
@@ -72,7 +72,7 @@ async fn api() -> Result<(), reqwest::Error> {
             
             let data: Value = response.json().await.unwrap();
 
-            let response = client.post(report_url_process)
+            client.post(report_url_process.clone())
                 .body(json!({
                     "info": base64::encode(format!("{}",data["progress"]))
                 }).to_string()).send().await.unwrap();

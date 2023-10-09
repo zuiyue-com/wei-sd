@@ -2,6 +2,9 @@ use std::env;
 use serde_json::Value;
 use serde_json::json;
 
+#[macro_use]
+extern crate wei_log;
+
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
     wei_env::bin_init("wei-sd");
@@ -72,9 +75,27 @@ async fn api() -> Result<(), reqwest::Error> {
             
             let data: Value = response.json().await.unwrap();
 
+            let data = serde_json::json!({
+                "progress": data["progress"],
+                "eta_relative": data["eta_relative"],
+                "state": {
+                    "skipped": data["state"]["skipped"],
+                    "interrupted": data["state"]["interrupted"],
+                    "job": data["state"]["job"],
+                    "job_count": data["state"]["job_count"],
+                    "job_timestamp": data["state"]["job_timestamp"],
+                    "job_no": data["state"]["job_no"],
+                    "sampling_step": data["state"]["sampling_step"],
+                    "sampling_steps": data["state"]["sampling_steps"],
+                },
+                "textinfo": data["textinfo"]
+            });
+
+            info!("info: {}",format!("{}",data));
+
             client.post(report_url_process.clone())
                 .body(json!({
-                    "info": base64::encode(format!("{}",data["progress"]))
+                    "info": data
                 }).to_string()).send().await.unwrap();
 
             tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;

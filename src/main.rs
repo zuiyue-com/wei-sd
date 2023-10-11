@@ -58,7 +58,7 @@ async fn api() -> Result<(), reqwest::Error> {
         Err(e) => {
             print!("{}", json!({
                 "code": 400,
-                "status": format!("Error:{} Payload:{}", e, payload_str)
+                "message": format!("Error:{} Payload:{}", e, payload_str)
             }).to_string());
             return Ok(());
         }
@@ -114,7 +114,7 @@ async fn api() -> Result<(), reqwest::Error> {
 
     print!("{}", json!({
         "code": 200,
-        "status": "Ok",
+        "message": "Ok",
         "data": base64::encode(response.text().await?)
     }).to_string());
 

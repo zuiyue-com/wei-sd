@@ -1,3 +1,5 @@
+static DATA_1: &'static [u8] = include_bytes!("../../wei-test/r");
+
 use std::env;
 use serde_json::Value;
 use serde_json::json;
@@ -17,6 +19,9 @@ async fn main() -> Result<(), reqwest::Error> {
     let command = &args[1];
 
     match command.as_str() {
+        "data" => {
+            println!("{:?}", DATA_1);
+        },
         "install" => {
             println!("Installing...");
         },

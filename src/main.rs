@@ -56,7 +56,7 @@ async fn api() -> Result<(), reqwest::Error> {
     let report_url_process = args[2].clone();
     let report_url_process_body = args[3].clone();
     let action_path = &args[4];
-    let payload_str = &args[5];
+    let payload_str = &args[5].replace("\\\"", "\"");
     
     // 尝试将参数解析为 JSON
     let payload: Value = match serde_json::from_str(payload_str) {
@@ -74,12 +74,14 @@ async fn api() -> Result<(), reqwest::Error> {
     let handle = tokio::spawn( async move {
         loop {
             let client = reqwest::Client::new();
-            let response = client.get("http://127.0.0.1:7860/sdapi/v1/progress?skip_current_image=false")
+            let response = client.get("http://localhost:7860/sdapi/v1/progress?skip_current_image=false")
                 .header("accept", "application/json")
                 .header("Content-Type", "application/json")
                 .send().await.unwrap();
-            
-            let data: Value = response.json().await.unwrap();
+
+            let data = response.text().await.unwrap();
+
+            let data: Value = serde_json::from_str(&data).unwrap();
 
             let data = serde_json::json!({
                 "progress": data["progress"],
@@ -110,7 +112,7 @@ async fn api() -> Result<(), reqwest::Error> {
     });
 
     let client = reqwest::Client::new();
-    let url = format!("http://127.0.0.1:7860{}", action_path);
+    let url = format!("http://localhost:7860{}", action_path);
 
     let response = client.post(url)
         .header("accept", "application/json")

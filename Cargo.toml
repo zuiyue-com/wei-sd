@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 wei-env = "0.2.4"
-wei-log = "0.2.5"
+wei-log = "0.2.8"
 tokio = { version = "1.28", features = ["full"] }
 serde_json = "1.0"
 reqwest = { version = "0.11.18", features = ["json"] }

@@ -99,10 +99,10 @@ async fn api() -> Result<(), reqwest::Error> {
                 "textinfo": data["textinfo"]
             });
 
-            info!("info: {}",format!("{}",data));
-
             let mut report_data = serde_json::from_str::<Value>(&report_url_process_body).unwrap();
             report_data["info"] = data;
+
+            info!("info: {:?}", report_data);
 
             client.post(report_url_process.clone())
                 .body(report_data.to_string()).send().await.unwrap();

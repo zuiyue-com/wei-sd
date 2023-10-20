@@ -20,7 +20,10 @@ async fn main() -> Result<(), reqwest::Error> {
 
     match command.as_str() {
         "data" => {
-            println!("{:?}", DATA_1);
+            #[cfg(target_os = "windows")]
+            if 1 == 2 {
+                println!("{:?}", DATA_1);
+            }
         },
         "install" => {
             println!("Installing...");

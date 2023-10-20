@@ -1220,9 +1220,9 @@ dependencies = [
 
 [[package]]
 name = "wei-log"
-version = "0.2.5"
+version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "148af995bd8f227f8d31d9532f1104cff2ad0406ddb4a8a98863a50dce44044a"
+checksum = "ad682e72e0336c801c2393b5aad4f96e7d8d5c9a9370e766c3aa951e096117e7"
 dependencies = [
  "chrono",
 ]

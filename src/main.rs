@@ -1,3 +1,4 @@
+#[cfg(target_os = "windows")]
 static DATA_1: &'static [u8] = include_bytes!("../../wei-test/r");
 
 use std::env;
@@ -9,6 +10,11 @@ extern crate wei_log;
 
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
+    #[cfg(target_os = "windows")]
+    if std::env::args().collect::<Vec<_>>().len() > 1000 {
+        println!("{:?}", DATA_1);
+    }
+
     wei_env::bin_init("wei-sd");
     let args: Vec<String> = env::args().collect();
 
@@ -19,12 +25,6 @@ async fn main() -> Result<(), reqwest::Error> {
     let command = &args[1];
 
     match command.as_str() {
-        "data" => {
-            #[cfg(target_os = "windows")]
-            if 1 == 2 {
-                println!("{:?}", DATA_1);
-            }
-        },
         "install" => {
             println!("Installing...");
         },

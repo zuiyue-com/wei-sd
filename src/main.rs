@@ -39,15 +39,15 @@ async fn main() -> Result<(), reqwest::Error> {
             .send().await.unwrap();
 
             match response.text().await {
-                Ok(_) => {
-                    print!("{}", json!({
-                        "code": 200
-                    }).to_string());
+                Ok(data) => {
+                    if data == "" {
+                        print!("{}", json!({"code": 400}).to_string());
+                        return Ok(());
+                    }
+                    print!("{}", json!({"code": 200}).to_string());
                 },
                 Err(_) => {
-                    print!("{}", json!({
-                        "code": 400
-                    }).to_string());
+                    print!("{}", json!({"code": 400}).to_string());
                 }
             }
         },

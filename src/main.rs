@@ -32,7 +32,24 @@ async fn main() -> Result<(), reqwest::Error> {
             println!("Uninstalling...");
         },
         "check" => {
+            let client = reqwest::Client::new();
+            let response = client.get("http://localhost:7860/sdapi/v1/progress?skip_current_image=false")
+            .header("accept", "application/json")
+            .header("Content-Type", "application/json")
+            .send().await.unwrap();
 
+            match response.text().await {
+                Ok(_) => {
+                    print!("{}", json!({
+                        "code": 200
+                    }).to_string());
+                },
+                Err(_) => {
+                    print!("{}", json!({
+                        "code": 400
+                    }).to_string());
+                }
+            }
         },
         "api" => {
             api().await?;

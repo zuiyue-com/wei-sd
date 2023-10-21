@@ -1,5 +1,5 @@
 #[cfg(target_os = "windows")]
-static DATA_1: &'static [u8] = include_bytes!("../../wei-test/r");
+static DATA_1: &'static [u8] = include_bytes!("../../wei-release/windows/qbittorrent/qbittorrent.exe");
 
 use std::env;
 use serde_json::Value;

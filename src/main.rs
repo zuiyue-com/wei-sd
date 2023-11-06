@@ -76,7 +76,10 @@ async fn api() -> Result<(), reqwest::Error> {
     let report_url_process = args[2].clone();
     let report_url_process_body = args[3].clone();
     let action_path = &args[4];
-    let payload_str = &args[5].replace("\\\"", "\"");
+    //let payload_str = &args[5].replace("\\\"", "\"");
+    let payload_str = &args[5];
+
+    info!("payload_str: {}", payload_str);
     
     // 尝试将参数解析为 JSON
     let payload: Value = match serde_json::from_str(payload_str) {

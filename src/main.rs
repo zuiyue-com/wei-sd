@@ -76,7 +76,6 @@ async fn api() -> Result<(), reqwest::Error> {
     let report_url_process = args[2].clone();
     let report_url_process_body = args[3].clone();
     let action_path = &args[4];
-    //let payload_str = &args[5].replace("\\\"", "\"");
     let payload_str = &args[5];
 
     info!("payload_str: {}", payload_str);

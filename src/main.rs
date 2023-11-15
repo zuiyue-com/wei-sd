@@ -103,7 +103,12 @@ async fn api() -> Result<(), reqwest::Error> {
 
             let data = response.text().await.unwrap();
 
-            let data: Value = serde_json::from_str(&data).unwrap();
+            let data: Value = match serde_json::from_str(&data) {
+                Ok(v) => v,
+                Err(_) => {
+                    break;
+                }
+            };
 
             let data = serde_json::json!({
                 "progress": data["progress"],
@@ -136,18 +141,37 @@ async fn api() -> Result<(), reqwest::Error> {
     let client = reqwest::Client::new();
     let url = format!("http://localhost:7860{}", action_path);
 
-    let response = client.post(url)
+    let response = match client.post(url)
         .header("accept", "application/json")
         .header("Content-Type", "application/json")
         .json(&payload)
         .send()
-        .await?;
+        .await {
+            Ok(v) => v,
+            Err(e) => {
+                print!("{}", json!({
+                    "code": 400,
+                    "message": format!("Error:{}", e)
+                }).to_string());
+                handle.abort();
+                return Ok(());
+            }
+    };
 
-    print!("{}", json!({
-        "code": 200,
-        "message": "Ok",
-        "data": base64::encode(response.text().await?)
-    }).to_string());
+    let data = base64::encode(response.text().await?);
+
+    if data == "" {
+        print!("{}", json!({
+            "code": 400,
+            "message": "Error: Empty response"
+        }).to_string());
+    } else {
+        print!("{}", json!({
+            "code": 200,
+            "message": "Sd-Ok",
+            "data": data
+        }).to_string());
+    }
 
     handle.abort();
 

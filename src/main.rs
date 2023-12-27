@@ -73,10 +73,12 @@ fn help() {
 
 async fn api() -> Result<(), reqwest::Error> {
     let args: Vec<String> = env::args().collect();
-    let report_url_process = args[2].clone();
-    let report_url_process_body = args[3].clone();
-    let action_path = &args[4];
-    let payload_str = &args[5];
+
+    let action_path = &args[2];
+    let payload_str = &args[3];
+
+    let report_url_process = args[4].clone();
+    let report_url_process_body = args[5].clone();
 
     info!("payload_str: {}", payload_str);
     

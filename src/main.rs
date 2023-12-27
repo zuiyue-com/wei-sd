@@ -128,13 +128,10 @@ async fn api() -> Result<(), reqwest::Error> {
                 "textinfo": data["textinfo"]
             });
 
-            let mut report_data = serde_json::from_str::<Value>(&report_url_process_body).unwrap();
-            report_data["info"] = data;
-
-            info!("info: {:?}", report_data);
+            info!("report data: {:?}", data);
 
             client.post(report_url_process.clone())
-                .body(report_data.to_string()).send().await.unwrap();
+                .body(data.to_string()).send().await.unwrap();
 
             tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
         }

@@ -78,6 +78,25 @@ async fn api() -> Result<(), reqwest::Error> {
     let payload_str = &args[3];
     let report_url_process = args[4].clone();
 
+    // report_url_process 是一个url加modac=process&time={}&uuid={}&taskUuid={}的地址
+    // 我需要把modac,time,uuid,taskUuid提取出来
+
+    let url = report_url_process.clone();
+    let re = regex::Regex::new(r"modac=(.*?)&time=(.*?)&uuid=(.*?)&taskUuid=(.*)").unwrap();
+    let caps = re.captures(&url).unwrap();
+
+    let modac = &caps[1];
+    let time = &caps[2];
+    let uuid = &caps[3];
+    let task_uuid = &caps[4];
+
+    let mut report_url_process_body = serde_json::json!({
+        "time": time,
+        "uuid": uuid,
+        "modac": modac,
+        "taskUuid": task_uuid
+    });
+
     info!("payload_str: {}", payload_str);
     
     // 尝试将参数解析为 JSON
@@ -126,10 +145,12 @@ async fn api() -> Result<(), reqwest::Error> {
                 "textinfo": data["textinfo"]
             });
 
-            info!("report data: {:?}", data);
+            report_url_process_body["info"] = data;
+            
+            info!("report_url_process_body: {}", report_url_process_body);
 
             client.post(report_url_process.clone())
-                .body(data.to_string()).send().await.unwrap();
+                .body(report_url_process_body.to_string()).send().await.unwrap();
 
             tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
         }
